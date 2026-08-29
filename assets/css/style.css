@@ -31,9 +31,11 @@
   --maxw: 1440px;
   --header-h: 72px;
 
-  /* 홈 히어로 이미지의 가로÷세로 비율. 작업물 이미지는 16:11 권장이므로 16/11 = 1.4545 입니다.
-     이미지 비율을 바꾸면 이 값도 함께 고쳐 주세요. (.hero 의 폭 상한 계산에 쓰입니다) */
-  --hero-ratio: 1.4545;
+  /* 홈 히어로 이미지 칸의 비율. 작업물 이미지 권장 비율(가로 16 : 세로 11)과 같게 둡니다.
+     히어로의 세로 높이는 이 값이 정합니다 — 창 높이에 묶여 있지 않으므로
+     창을 위아래로 늘였다 줄여도 구도가 전혀 변하지 않습니다.
+     다른 비율의 이미지를 쓰시면 이 값만 고쳐 주세요. */
+  --hero-ar: 16 / 11;
 
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -264,22 +266,21 @@ ul { margin: 0; padding: 0; list-style: none; }
    7. 페이지별
    -------------------------------------------------------------------------- */
 /* 홈 히어로 — 왼쪽 텍스트 / 오른쪽 이미지 */
-/* 이미지 칸의 가로 상한 = 패널 세로 x 이미지 비율.
-   이 상한을 넘어가면 cover 가 가로 기준으로 이미지를 키워서 제품이 위로 밀려 올라갑니다.
-   상한을 걸어 두면 배율이 세로에만 의존하므로 창 폭이 아무리 넓어져도 제품 위치·크기가 그대로입니다.
-   보통 화면(폭 < 세로 x 2.9)에서는 상한에 닿지 않아 지금까지와 똑같이 반반으로 나뉩니다. */
-.hero {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(0, min(50%, calc((100vh - var(--header-h)) * var(--hero-ratio))));
-  min-height: calc(100vh - var(--header-h));
-}
+/* 히어로 높이는 창 높이(100vh)가 아니라 이미지 칸의 비율이 정합니다.
+   이렇게 두면 창을 위아래로 줄이거나 늘여도 이미지 배율과 제품 위치가 그대로입니다.
+   텍스트 칸이 더 필요하면(폭이 좁을 때) 행이 그만큼 늘어나는데,
+   그때도 이미지 칸은 세로로 길어질 뿐이라 cover 가 좌우만 잘라내 제품은 제자리에 있습니다. */
+.hero { display: grid; grid-template-columns: 1fr 1fr; }
 .hero__text {
   display: flex; flex-direction: column; justify-content: space-between;
   padding: var(--sp-8) var(--sp-8) var(--sp-8) var(--gutter);
 }
 .hero__media { background: var(--surface-2); overflow: hidden; position: relative; }
+/* 폭에 맞춘 최소 높이(= 이미지 비율)를 만들어 주는 자리지기입니다.
+   덕분에 히어로 높이가 창 높이가 아니라 이미지 비율로 정해집니다.
+   폭이 좁아 텍스트 칸이 더 길어지면 패널이 그만큼 세로로 늘어나는데,
+   그때는 세로로 긴 칸이 되므로 cover 가 좌우만 잘라내 제품은 제자리에 있습니다. */
+.hero__media::before { content: ""; display: block; aspect-ratio: var(--hero-ar); }
 .hero__media img { width: 100%; height: 100%; object-fit: cover; }
 
 /* 히어로 작업물 슬라이더 — 좌·우 화살표로 넘깁니다 */
@@ -394,7 +395,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 
   .hero { grid-template-columns: 1fr; min-height: 0; }
   .hero__text { padding: var(--sp-7) var(--gutter) var(--sp-7); gap: var(--sp-8); }
-  .hero__media { aspect-ratio: 4 / 3; }
   .hero-arrow { width: 44px; height: 44px; }
   .hero-arrow--prev { left: var(--sp-3); }
   .hero-arrow--next { right: var(--sp-3); }
