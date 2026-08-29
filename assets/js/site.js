@@ -96,13 +96,184 @@
     var featured = PROJECTS.filter(function (p) { return p.featured; });
     renderCards(wrap, (featured.length ? featured : PROJECTS).slice(0, 3));
 
-    var heroImg = $("#hero-image");
-    if (heroImg && PROJECTS.length) {
-      heroImg.src = PROJECTS[0].cover;
-      heroImg.alt = PROJECTS[0].title + " 대표 이미지";
-    }
     var count = $("#project-count");
     if (count) count.textContent = String(PROJECTS.length);
+  }
+
+  /* ---------- 홈: 히어로 작업물 슬라이더 ----------
+     기본은 자동 재생이고, 좌·우 화살표(키보드 \u2190\u2192, 모바일 스와이프)로도 넘깁니다.
+     두 장의 이미지 레이어를 번갈아 쓰며 페이드로 교체합니다. */
+  var HERO_AUTOPLAY_MS = 5000;
+
+  function initHeroSlider() {
+    var root = $("#hero-slider");
+    if (!root || !PROJECTS.length) return;
+
+    var list = PROJECTS;
+    var total = list.length;
+    var idx = 0;      // 현재 보이는 작업물
+    var front = 0;    // 지금 화면에 떠 있는 레이어
+    var token = 0;    // 빠르게 연타했을 때 지난 로딩을 무시하려는 표식
+
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    root.style.setProperty("--hero-autoplay", (HERO_AUTOPLAY_MS / 1000) + "s");
+    root.innerHTML = '' +
+      '<div class="hero-slider__stage">' +
+        '<img class="hero-slide is-active" alt="">' +
+        '<img class="hero-slide" alt="" aria-hidden="true">' +
+      '</div>' +
+      (total > 1
+        ? '<button class="hero-arrow hero-arrow--prev" type="button" aria-label="이전 작업물">\u2190</button>' +
+          '<button class="hero-arrow hero-arrow--next" type="button" aria-label="다음 작업물">\u2192</button>'
+        : '') +
+      '<div class="hero-cap">' +
+        (total > 1 ? '<div class="hero-progress"><span></span></div>' : '') +
+        '<a class="hero-cap__link" href="#">' +
+          '<div class="hero-cap__title"></div>' +
+          '<div class="hero-cap__sub"></div>' +
+        '</a>' +
+        '<div class="hero-cap__aside">' +
+          (total > 1 ? '<button class="hero-play" type="button"></button>' : '') +
+          '<span class="hero-cap__count"></span>' +
+        '</div>' +
+      '</div>';
+
+    var layers = $$(".hero-slide", root);
+    var link   = $(".hero-cap__link", root);
+    var elTit  = $(".hero-cap__title", root);
+    var elSub  = $(".hero-cap__sub", root);
+    var elCnt  = $(".hero-cap__count", root);
+    var elPlay = $(".hero-play", root);
+    var elBar  = $(".hero-progress", root);
+
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+    function paintCaption(p, n) {
+      link.href = "project.html?id=" + encodeURIComponent(p.id);
+      link.setAttribute("aria-label", p.title + " 자세히 보기");
+      elTit.textContent = p.title;
+      elSub.textContent = p.categoryKo + " \u00b7 " + p.client + " \u00b7 " + p.year;
+      elCnt.textContent = pad(n + 1) + " / " + pad(total);
+    }
+
+    function show(n) {
+      n = ((n % total) + total) % total;
+      if (n === idx) return;
+      var my = ++token;
+      var p = list[n];
+      var back = layers[1 - front];
+
+      back.src = p.cover;
+      back.alt = p.title + " \ub300\ud45c \uc774\ubbf8\uc9c0";
+
+      function swap() {
+        if (my !== token) return;          // 더 최근 클릭이 있으면 버립니다
+        layers[front].classList.remove("is-active");
+        back.classList.add("is-active");
+        front = 1 - front;
+        idx = n;
+        paintCaption(p, n);
+      }
+
+      if (back.complete) {
+        swap();
+      } else {
+        back.addEventListener("load", swap, { once: true });
+        back.addEventListener("error", swap, { once: true });
+      }
+    }
+
+    /* 첫 화면 */
+    layers[0].src = list[0].cover;
+    layers[0].alt = list[0].title + " \ub300\ud45c \uc774\ubbf8\uc9c0";
+    paintCaption(list[0], 0);
+
+    if (total < 2) return;
+
+    /* ----- 자동 재생 -----
+       wants  : 사용자가 켜 둔 상태 (PAUSE/PLAY 버튼)
+       holds  : 잠시 멈춰야 할 사정들 — 하나라도 켜져 있으면 타이머를 돌리지 않습니다 */
+    var timer = null;
+    var wants = !reduce;                                    // 모션을 줄이는 설정이면 처음부터 꺼둡니다
+    var holds = { hover: false, hidden: false, out: false };
+
+    function held() { return holds.hover || holds.hidden || holds.out; }
+
+    function sync() {
+      if (timer) { clearInterval(timer); timer = null; }
+
+      var running = wants && !held();
+      if (running) timer = setInterval(function () { go(idx + 1); }, HERO_AUTOPLAY_MS);
+
+      elPlay.textContent = wants ? "PAUSE" : "PLAY";
+      elPlay.setAttribute("aria-label", wants ? "작업물 자동 넘김 멈춤" : "작업물 자동 넘김 시작");
+
+      /* 진행 선 다시 그리기 — 클래스를 뗐다 붙이며 리플로우로 애니메이션을 되감습니다 */
+      elBar.classList.remove("is-running");
+      if (running) {
+        void elBar.offsetWidth;
+        elBar.classList.add("is-running");
+      }
+    }
+
+    /* 넘길 때마다 sync() 로 타이머와 진행 선을 처음부터 다시 셉니다.
+       자동 넘김도 이 함수를 거치므로 매 장마다 진행 선이 되감깁니다. */
+    function go(n) { show(n); sync(); }
+
+    elPlay.addEventListener("click", function () {
+      wants = !wants;
+      /* 직접 켰는데 버튼 위에 올라간 마우스·포커스 때문에 그대로 멈춰 있으면 안 되므로 잠금을 풉니다.
+         마우스가 밖으로 나갔다 다시 들어오면 평소처럼 다시 멈춥니다. */
+      if (wants) holds.hover = false;
+      sync();
+    });
+
+    root.addEventListener("click", function (e) {
+      var btn = e.target.closest(".hero-arrow");
+      if (!btn) return;
+      go(idx + (btn.classList.contains("hero-arrow--next") ? 1 : -1));
+    });
+
+    root.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight") { go(idx + 1); e.preventDefault(); }
+      if (e.key === "ArrowLeft")  { go(idx - 1); e.preventDefault(); }
+    });
+
+    /* 읽는 동안에는 멈춥니다 — 마우스를 올렸을 때, 키보드 포커스가 안에 있을 때 */
+    ["mouseenter", "focusin"].forEach(function (ev) {
+      root.addEventListener(ev, function () { holds.hover = true; sync(); });
+    });
+    ["mouseleave", "focusout"].forEach(function (ev) {
+      root.addEventListener(ev, function () { holds.hover = false; sync(); });
+    });
+
+    /* 다른 탭을 보고 있거나 히어로가 화면 밖이면 멈춥니다 */
+    document.addEventListener("visibilitychange", function () {
+      holds.hidden = document.hidden; sync();
+    });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        holds.out = !entries[0].isIntersecting;
+        sync();
+      }, { threshold: 0.25 }).observe(root);
+    }
+
+    /* 모바일 스와이프 */
+    var x0 = null, y0 = null;
+    root.addEventListener("touchstart", function (e) {
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    }, { passive: true });
+    root.addEventListener("touchend", function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      var dy = e.changedTouches[0].clientY - y0;
+      x0 = y0 = null;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;  // 세로 스크롤은 그대로
+      go(idx + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    sync();
   }
 
   /* ---------- 작업물 목록 + 필터 ---------- */
@@ -241,6 +412,7 @@
     markCurrent();
     fillSiteInfo();
     initHome();
+    initHeroSlider();
     initWorkList();
     initTeam();
     initDetail();
