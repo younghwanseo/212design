@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>212 DESIGN — 시각 디자인 스튜디오</title>
+<meta name="description" content="212디자인은 브랜딩·편집·패키지·공간·디지털을 다루는 서울의 시각 디자인 스튜디오입니다.">
+<meta property="og:title" content="212 DESIGN — 시각 디자인 스튜디오">
+<meta property="og:description" content="212디자인은 브랜딩·편집·패키지·공간·디지털을 다루는 서울의 시각 디자인 스튜디오입니다.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">본문 바로가기</a>
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__mark">212</span>
+      <span class="brand__ko">DESIGN</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="site-nav" aria-label="주요 메뉴">
+      <a href="about.html">회사소개</a>
+      <a href="team.html">팀</a>
+      <a href="work.html">작업물</a>
+      <a href="index.html#contact">문의</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero">
+  <div class="hero__text">
+    <div>
+      <div class="label">Visual Design Studio — Seoul</div>
+      <h1 class="display" style="margin-top:24px">보이는 것을<br>정리합니다</h1>
+    </div>
+    <div>
+      <p class="prose muted" style="max-width:34ch">
+        212디자인은 브랜딩, 편집, 패키지, 공간과 디지털을 오가며
+        하나의 규칙으로 묶이는 디자인을 만듭니다.
+        복잡한 것을 덜어내는 방식으로 일합니다.
+      </p>
+      <div class="hero__foot" style="margin-top:48px">
+        <a class="link-line" href="work.html">작업물 보기 <span class="link-line__arrow">→</span></a>
+        <a class="link-line" href="about.html">스튜디오 소개 <span class="link-line__arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="hero__media">
+    <img id="hero-image" src="assets/img/work/yeonhui-coffee-01.svg" alt="대표 작업 이미지">
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="split">
+      <div class="label">Selected Work</div>
+      <div>
+        <h2 class="h2">최근 작업</h2>
+        <p class="prose muted" style="margin-top:16px;max-width:42ch">
+          지금까지 <span id="project-count">9</span>개의 프로젝트를 공개하고 있습니다.
+          분야별로 나누어 보려면 작업물 페이지로 이동해 주세요.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid--3" id="featured-work" style="margin-top:52px"></div>
+
+    <div style="margin-top:52px">
+      <a class="link-line" href="work.html">전체 작업물 <span class="link-line__arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <hr class="rule">
+    <div class="split" style="margin-top:52px">
+      <div class="label">What we do</div>
+      <div class="dl" style="border-top:0">
+        <div class="dl__row">
+          <div class="dl__key">01</div>
+          <div class="dl__val"><h3 class="h3">브랜드 아이덴티티</h3><p>로고와 규칙, 적용 가이드까지. 오래 쓰일 수 있는 최소한의 시스템을 만듭니다.</p></div>
+        </div>
+        <div class="dl__row">
+          <div class="dl__key">02</div>
+          <div class="dl__val"><h3 class="h3">편집 · 인쇄물</h3><p>도서, 잡지, 리포트. 긴 글이 끝까지 읽히도록 조판과 구조를 설계합니다.</p></div>
+        </div>
+        <div class="dl__row">
+          <div class="dl__key">03</div>
+          <div class="dl__val"><h3 class="h3">패키지</h3><p>구조, 소재, 인쇄 사양까지 함께 정합니다. 만들 수 있는 디자인을 그립니다.</p></div>
+        </div>
+        <div class="dl__row">
+          <div class="dl__key">04</div>
+          <div class="dl__val"><h3 class="h3">공간 · 디지털</h3><p>전시 그래픽과 웹·앱 UI. 사람이 실제로 움직이는 순서에서 출발합니다.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer" id="contact">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <div class="label">212 DESIGN</div>
+        <p class="h3" style="margin-top:14px">함께 만들 프로젝트가<br>있으시면 편하게 연락 주세요.</p>
+        <a class="link-line" style="margin-top:24px" href="mailto:hello@212design.kr" data-site="email">hello@212design.kr</a>
+      </div>
+      <div>
+        <div class="label">Contact</div>
+        <ul style="margin-top:14px">
+          <li><a href="mailto:hello@212design.kr" data-site="email">hello@212design.kr</a></li>
+          <li data-site="phone">02-212-0212</li>
+          <li data-site="address">서울시 마포구 연희로 212, 3층</li>
+        </ul>
+      </div>
+      <div>
+        <div class="label">Menu</div>
+        <ul style="margin-top:14px">
+          <li><a href="about.html">회사소개</a></li>
+          <li><a href="team.html">팀</a></li>
+          <li><a href="work.html">작업물</a></li>
+          <li><a href="https://instagram.com/" data-site="instagram" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="label">&copy; <span id="year">2026</span> 212 DESIGN. ALL RIGHTS RESERVED.</span>
+      <span class="label">SEOUL, KOREA</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data/projects.js"></script>
+<script src="data/team.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

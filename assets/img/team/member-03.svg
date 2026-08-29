@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" width="900" height="1200" role="img" aria-label="팀원 사진 자리">
+  <rect width="900" height="1200" fill="#EAE5DE"/>
+  <circle cx="450" cy="470" r="150" fill="#ffffff" opacity="0.55"/>
+  <path d="M180 1200 C180 930 290 790 450 790 C610 790 720 930 720 1200 Z" fill="#ffffff" opacity="0.55"/>
+  <text x="52" y="1146" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24" letter-spacing="3" fill="#1A1A1A" opacity="0.28">212 / 03</text>
+</svg>
